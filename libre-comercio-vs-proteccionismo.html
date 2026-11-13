@@ -1,0 +1,715 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Libre comercio vs proteccionismo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: sticky HUD with XP bar on top; tabs per mission; mind map canvas (left/right branches) or nested list on phones; detail card below. */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --surface2:#e8ecf3; --fg:#121c2b; --muted:#556379; --line:#d3dae6;
+  --accent:#2457d6; --accent-fg:#ffffff; --good:#1b7f47; --goodbg:#e0f3e8; --bad:#b9382a; --badbg:#fbe5e1; --warn:#a66a10;
+  --b0:#2457d6; --b0bg:#e4ecfc;
+  --b1:#0e8084; --b1bg:#dcf1f1;
+  --b2:#a8650b; --b2bg:#faeed6;
+  --b3:#c0410f; --b3bg:#fce6db;
+  --b4:#7339d6; --b4bg:#ece5fb;
+  --b5:#2b7d52; --b5bg:#dff1e6;
+  --b6:#b8205c; --b6bg:#fbe2ec;
+  --display:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d131c; --surface:#151e2b; --surface2:#1d2838; --fg:#e8edf5; --muted:#93a1b6; --line:#2b3748;
+    --accent:#6e9cff; --accent-fg:#0d131c; --good:#58c98a; --goodbg:#16301f; --bad:#ff8272; --badbg:#3a1b19; --warn:#e0a443;
+    --b0:#6e9cff; --b0bg:#16264a;
+    --b1:#4cc3c7; --b1bg:#12302f;
+    --b2:#e3a64a; --b2bg:#3a2b12;
+    --b3:#ff8f5e; --b3bg:#3b2014;
+    --b4:#a98aff; --b4bg:#272048;
+    --b5:#5ccb90; --b5bg:#14301f;
+    --b6:#ff7fae; --b6bg:#3b1829;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d131c; --surface:#151e2b; --surface2:#1d2838; --fg:#e8edf5; --muted:#93a1b6; --line:#2b3748;
+  --accent:#6e9cff; --accent-fg:#0d131c; --good:#58c98a; --goodbg:#16301f; --bad:#ff8272; --badbg:#3a1b19; --warn:#e0a443;
+  --b0:#6e9cff; --b0bg:#16264a;
+  --b1:#4cc3c7; --b1bg:#12302f;
+  --b2:#e3a64a; --b2bg:#3a2b12;
+  --b3:#ff8f5e; --b3bg:#3b2014;
+  --b4:#a98aff; --b4bg:#272048;
+  --b5:#5ccb90; --b5bg:#14301f;
+  --b6:#ff7fae; --b6bg:#3b1829;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main.wrap{padding-bottom:56px}
+
+/* HUD */
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.hudrow{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding-top:10px}
+.brand{display:flex;flex-direction:column;min-width:0}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brand strong{font-family:var(--display);font-size:17px;line-height:1.2}
+.lvl{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.lvname{font-family:var(--display);font-weight:600;color:var(--accent)}
+.xpnum{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .5s ease}
+.nextlv{font-size:12px;color:var(--muted);padding:4px 0 8px}
+
+/* Intro */
+.intro{padding:22px 0 10px}
+.intro h1{font-family:var(--display);font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0 0 8px;text-wrap:balance;letter-spacing:-.01em}
+.intro p{margin:0;max-width:70ch;color:var(--muted);text-wrap:pretty}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 0;scrollbar-width:thin}
+.tab{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tab .ck{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;font-size:10px;opacity:.55}
+.tab .ck.on{background:var(--good);border-color:var(--good);color:#fff;opacity:1}
+
+/* Panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+h2{font-family:var(--display);font-size:22px;margin:0 0 4px}
+h3{font-family:var(--display);font-size:18px;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 14px;max-width:70ch}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:500;font-size:14px}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.5;cursor:default}
+.btn.sm{padding:5px 10px;font-size:13px}
+
+/* Map toolbar */
+.mapbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.mission{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.mini{width:140px;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--good);transition:width .4s}
+.mission b{color:var(--fg);font-variant-numeric:tabular-nums}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 12px;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+
+/* Mind map canvas */
+.mapwrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:
+  radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/22px 22px,var(--surface);max-height:78vh}
+.canvas{position:relative}
+.canvas svg{position:absolute;inset:0;pointer-events:none}
+.canvas path{fill:none;stroke-width:2;opacity:.75}
+.node{position:absolute;display:flex;align-items:center;gap:6px;width:var(--w);height:var(--h);padding:0 9px;border:1.5px dashed var(--c);background:var(--cbg);color:var(--fg);border-radius:10px;font-size:12.5px;line-height:1.2;font-weight:500;text-align:left;transition:box-shadow .15s,transform .15s}
+.node:hover{transform:translateY(-1px)}
+.node.seen{border-style:solid}
+.node.d1{font-weight:600;border-width:2px}
+.node.sel{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 38%,transparent)}
+.node .t{flex:1;min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.node .tog{flex:none;width:18px;height:18px;border-radius:50%;background:var(--c);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;line-height:1}
+.node.root{background:var(--fg);color:var(--bg);border:0;font-family:var(--display);font-size:16px;font-weight:600;justify-content:center;text-align:center;border-radius:16px;padding:0 14px}
+.node.root .t{-webkit-line-clamp:3;flex:none}
+.node.root.sel{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 45%,transparent)}
+
+/* Map as list (phones) */
+.list{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:10px 8px}
+.li{margin:2px 0}
+.li>button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid transparent;border-left:4px dashed var(--c);background:var(--cbg);border-radius:8px;padding:9px 10px;font-weight:500;font-size:14px}
+.li>button.seen{border-left-style:solid}
+.li>button.sel{box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 50%,transparent)}
+.li .t{flex:1;min-width:0}
+.li .tog{flex:none;width:20px;height:20px;border-radius:50%;background:var(--c);color:var(--surface);display:grid;place-items:center;font-size:14px;font-weight:700}
+.kids{margin-left:14px;padding-left:8px;border-left:1px solid var(--line)}
+
+/* Detail */
+.detail{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c,var(--accent));border-radius:12px;padding:16px 18px}
+.detail p{margin:0;max-width:75ch;text-wrap:pretty}
+.detail.empty{border-left-color:var(--line);color:var(--muted)}
+.crumb{font-size:12px;color:var(--muted);margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{border:1.5px dashed var(--c);background:transparent;border-radius:999px;padding:4px 11px;font-size:13px}
+.chip.seen{border-style:solid;background:color-mix(in srgb,var(--c) 14%,transparent)}
+
+/* Quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.dots{display:flex;gap:5px}
+.dots i{width:22px;height:6px;border-radius:3px;background:var(--surface2)}
+.dots i.ok{background:var(--good)}.dots i.no{background:var(--bad)}.dots i.cur{background:var(--accent)}
+.q{font-family:var(--display);font-size:20px;line-height:1.3;margin:0 0 14px;text-wrap:balance}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 14px;display:flex;gap:10px;align-items:flex-start}
+.opt:hover:not([disabled]){border-color:var(--accent);background:var(--surface2)}
+.opt .l{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--muted);display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--muted)}
+.opt.good{border-color:var(--good);background:var(--goodbg)}.opt.good .l{background:var(--good);border-color:var(--good);color:#fff}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}.opt.bad .l{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--surface2);max-width:75ch}
+.fb strong{display:block;margin-bottom:2px}
+.score{font-family:var(--display);font-size:44px;line-height:1;margin:6px 0}
+
+/* Match */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.mcol{display:grid;gap:8px;align-content:start}
+.mcol h4{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mi{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:14px;min-height:46px}
+.mi:hover:not([disabled]){border-color:var(--accent)}
+.mi.pick{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+.mi.done{border-color:var(--good);background:var(--goodbg);cursor:default}
+.mi.shake{animation:shake .35s;border-color:var(--bad)}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.errs{font-size:13px;color:var(--muted)}
+
+/* Scenario */
+.case{background:var(--surface2);border-radius:10px;padding:14px 16px;margin-bottom:14px;max-width:80ch}
+.sc{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--surface);cursor:pointer}
+.sc input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:none}
+.sc.on{border-color:var(--accent)}
+.sc.good{border-color:var(--good);background:var(--goodbg)}
+.sc.bad{border-color:var(--bad);background:var(--badbg)}
+.sc.miss{border-style:dashed;border-color:var(--warn)}
+.sc small{display:block;color:var(--muted);margin-top:3px}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:1px 6px;margin-right:6px}
+.tag.g{background:var(--good);color:#fff}.tag.b{background:var(--bad);color:#fff}.tag.w{background:var(--warn);color:#fff}
+
+/* Logros */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.ladder{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.ladder li{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;background:var(--surface2);color:var(--muted);font-size:14px}
+.ladder li.on{background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--fg);font-weight:600}
+.ladder li.cur{outline:2px solid var(--accent)}
+.badges{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.badges li{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:10px;border:1.5px dashed var(--line);color:var(--muted)}
+.badges li.on{border:1.5px solid var(--good);background:var(--goodbg);color:var(--fg)}
+.badges .seal{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);font-weight:700;font-size:13px}
+.badges li.on .seal{background:var(--good);color:#fff}
+.badges small{display:block;color:var(--muted)}
+.field{display:grid;gap:4px;max-width:360px;margin-bottom:14px}
+.field label{font-size:13px;color:var(--muted)}
+.field input{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:9px 12px;font:inherit}
+.cert{margin-top:14px;border:2px solid var(--fg);border-radius:14px;padding:20px 22px;background:var(--surface);position:relative}
+.cert .kicker{margin-bottom:6px;display:block}
+.cert h3{font-size:24px;margin-bottom:2px}
+.cert dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:12px 0 0;font-size:14px}
+.cert dt{color:var(--muted)}.cert dd{margin:0;font-weight:500}
+textarea.copybox{width:100%;min-height:120px;margin-top:10px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);padding:10px;font:13px/1.4 var(--body)}
+
+/* Footer */
+.foot{margin-top:28px;color:var(--muted);font-size:13px;max-width:80ch}
+.foot h4{font-family:var(--display);font-size:14px;color:var(--fg);margin:0 0 6px}
+.foot ul{margin:0 0 14px;padding-left:18px}
+.foot a{color:var(--accent);overflow-wrap:anywhere}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;pointer-events:none;transition:all .3s;z-index:40;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:640px){
+  .mgrid{grid-template-columns:1fr}
+  .panel{padding:14px}
+  .q{font-size:18px}
+  .mini{width:100px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+</style>
+<header class="hud"><div class="wrap" id="hud"></div></header>
+<main class="wrap">
+  <section class="intro" id="intro"></section>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Misiones"></nav>
+  <div id="view"></div>
+  <footer class="foot" id="foot"></footer>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+window.DATA = {
+  id: 'comercio-v1',
+  short: 'Libre comercio vs. proteccionismo',
+  title: 'Libre comercio vs. proteccionismo',
+  subtitle: 'Un mapa mental para entender uno de los debates centrales de la economía internacional: teorías, instrumentos, historia, enfoques intermedios y el caso de Ecuador. Explora el mapa y cumple las cuatro misiones para subir de nivel.',
+  credit: 'Elaborado con IA (Claude, de Anthropic) para estructurar y redactar los contenidos, y con un juego interactivo propio (XP, niveles, insignias y misiones) como herramienta de gamificación. Las teorías clásicas (Smith, Ricardo, Hamilton, List) y la cronología son conocimiento estándar de la disciplina; las fuentes de arriba respaldan el enfoque sobre Ecuador y la discusión de ventajas y desventajas.',
+  sources: [
+    { t: 'Jaramillo, S. (2023). Ventajas y desventajas de la firma de tratados de libre comercio. Estudios de la Gestión 14. UASB.', u: 'https://revistas.uasb.edu.ec/index.php/eg/article/download/4120/4002/16309' },
+    { t: 'Artieda, J. y Artieda, C. Aranceles y tratados de libre comercio: estrategias para el crecimiento económico en Ecuador. Ciencia UNEMI.', u: 'https://ojs.unemi.edu.ec/index.php/cienciaunemi/article/download/2473/2123/8411' },
+    { t: 'Economipedia. Proteccionismo: ventajas y desventajas.', u: 'https://economipedia.com/definiciones/proteccionismo.html' },
+    { t: 'Escuela Politécnica Nacional. Análisis sobre libre comercio, proteccionismo y complementariedad comercial para el Ecuador.', u: 'https://bibdigital.epn.edu.ec:443/bitstream/15000/2333/1/CD-3082.pdf' },
+    { t: 'Universidad Espíritu Santo. Libre comercio o proteccionismo: ¿cómo lograr la mejor política internacional que impulse el comercio?', u: 'https://repositorio.uees.edu.ec:8443/server/api/core/bitstreams/1759d3d4-726e-43c8-9c0c-b6e79f63e318/content' }
+  ],
+  tree: {
+    t: 'Libre comercio vs. proteccionismo',
+    d: 'Debate central de la política comercial: ¿conviene abrir la economía a la competencia internacional o proteger la producción nacional con barreras? En la práctica casi todos los países combinan ambos enfoques según el sector y el momento histórico.',
+    c: [
+      { t: 'Libre comercio', d: 'Intercambio de bienes y servicios entre países con barreras mínimas (aranceles bajos y pocas restricciones). Se apoya en la idea de que cada país gana al especializarse y comerciar.', c: [
+        { t: 'Teorías que lo sustentan', d: 'Tres explicaciones clásicas de por qué comerciar beneficia a los países.', c: [
+          { t: 'Ventaja absoluta (Smith, 1776)', d: 'Adam Smith: cada país debe producir lo que fabrica con menor costo absoluto y comprar el resto. La división del trabajo crece con el tamaño del mercado.' },
+          { t: 'Ventaja comparativa (Ricardo, 1817)', d: 'David Ricardo: aunque un país produzca todo más barato, ambos ganan si se especializan en lo que tienen menor costo de oportunidad.' },
+          { t: 'Heckscher-Ohlin', d: 'Cada país exporta los bienes que usan de forma intensiva el factor que tiene en abundancia (tierra, trabajo o capital) e importa los demás.' }
+        ] },
+        { t: 'Ventajas', d: 'Beneficios que se atribuyen a la apertura comercial.', c: [
+          { t: 'Eficiencia y especialización', d: 'Los recursos se dirigen a las actividades donde el país es más productivo, lo que eleva la producción total.' },
+          { t: 'Precios menores y más variedad', d: 'Los consumidores acceden a más productos, de más calidad y a menor precio por la competencia de importados.' },
+          { t: 'Economías de escala', d: 'Un mercado más grande permite producir en mayor volumen y reducir el costo por unidad.' },
+          { t: 'Competencia e innovación', d: 'Las empresas expuestas a rivales extranjeros tienden a mejorar procesos, calidad y tecnología.' }
+        ] },
+        { t: 'Riesgos y críticas', d: 'Argumentos con los que se cuestiona la apertura sin condiciones.', c: [
+          { t: 'Desempleo en sectores expuestos', d: 'Los sectores que no resisten la competencia pueden reducir empleo, y reconvertir a los trabajadores toma tiempo.' },
+          { t: 'Dependencia externa', d: 'Una economía muy abierta y concentrada en pocos productos queda expuesta a shocks de precios y de demanda internacional.' },
+          { t: 'Ganancias desiguales', d: 'Una revisión de literatura sobre TLC halló que los países industrializados suelen percibir mayores ventajas que los menos desarrollados.' }
+        ] },
+        { t: 'Instituciones y acuerdos', d: 'Marco que organiza el comercio abierto.', c: [
+          { t: 'GATT (1947) y OMC (1995)', d: 'El GATT redujo aranceles tras la Segunda Guerra Mundial. En 1995 la Organización Mundial del Comercio lo sustituyó como foro de reglas y solución de controversias.' },
+          { t: 'Áreas de libre comercio y TLC', d: 'Grupo de países que eliminan barreras entre sí, pero cada uno mantiene su propio arancel frente a terceros.' },
+          { t: 'Uniones aduaneras', d: 'Además de eliminar barreras internas, aplican un arancel externo común, como la Unión Europea o la Comunidad Andina.' }
+        ] }
+      ] },
+      { t: 'Proteccionismo', d: 'Política que restringe las importaciones o favorece a los productores locales para protegerlos de la competencia extranjera.', c: [
+        { t: 'Instrumentos', d: 'Herramientas con las que un gobierno protege su producción.', c: [
+          { t: 'Aranceles', d: 'Impuestos a las importaciones. Ad valorem: porcentaje sobre el valor. Específico: monto fijo por unidad importada.' },
+          { t: 'Cuotas y licencias', d: 'Límites a la cantidad que se puede importar, o permisos previos para hacerlo.' },
+          { t: 'Barreras no arancelarias', d: 'Normas técnicas, sanitarias, de etiquetado o trámites que dificultan el ingreso de productos extranjeros.' },
+          { t: 'Subsidios', d: 'Apoyos públicos a los productores locales para que compitan con precios más bajos.' },
+          { t: 'Antidumping y salvaguardias', d: 'Derechos compensatorios para contrarrestar el dumping (vender en el exterior bajo el precio normal) y medidas temporales ante un aumento súbito de importaciones.' }
+        ] },
+        { t: 'Fundamentos teóricos', d: 'Ideas con las que se ha defendido la protección.', c: [
+          { t: 'Mercantilismo', d: 'Entre los siglos XVI y XVIII, se buscaba acumular metales preciosos mediante superávit comercial, exportando mucho e importando poco.' },
+          { t: 'Industria naciente (Hamilton, List)', d: 'Alexander Hamilton (1791) y Friedrich List (1841): una industria joven necesita protección temporal hasta ser competitiva.' },
+          { t: 'Sustitución de importaciones', d: 'Estrategia muy usada en América Latina a mediados del siglo XX, impulsada por la CEPAL: producir localmente lo que antes se importaba.' }
+        ] },
+        { t: 'Ventajas', d: 'Beneficios que se atribuyen a la protección.', c: [
+          { t: 'Proteger industrias estratégicas', d: 'Permite que un país conserve capacidades en sectores que considera clave para su desarrollo.' },
+          { t: 'Empleo nacional', d: 'Reduce la presión de las importaciones sobre el empleo de los sectores protegidos.' },
+          { t: 'Seguridad y soberanía', d: 'Evita depender de proveedores externos en bienes críticos como alimentos, energía o defensa.' }
+        ] },
+        { t: 'Costos y riesgos', d: 'Desventajas frecuentes de la protección.', c: [
+          { t: 'Precios más altos', d: 'Los consumidores pagan más y tienen menos variedad cuando se encarecen o limitan las importaciones.' },
+          { t: 'Represalias y guerras comerciales', d: 'Los socios responden con sus propias barreras, y las exportaciones del país también se ven afectadas.' },
+          { t: 'Ineficiencia y menor innovación', d: 'Sin presión competitiva, las empresas protegidas pueden tener pocos incentivos para mejorar.' }
+        ] }
+      ] },
+      { t: 'Historia del debate', d: 'El péndulo entre apertura y protección ha marcado la economía mundial durante siglos.', c: [
+        { t: 'Mercantilismo (siglos XVI-XVIII)', d: 'El comercio se ve como un juego de suma cero: un país gana lo que otro pierde.' },
+        { t: 'Smith y Ricardo (1776-1817)', d: 'Nace la defensa teórica del libre comercio: la especialización beneficia a todos los países que participan.' },
+        { t: 'Smoot-Hawley (1930)', d: 'EE. UU. elevó fuertemente sus aranceles en 1930. Las represalias de otros países contribuyeron a la caída del comercio durante la Gran Depresión.' },
+        { t: 'GATT y OMC (1947-1995)', d: 'Tras la guerra se construye un sistema multilateral de reglas para reducir aranceles y evitar escaladas proteccionistas.' },
+        { t: 'Guerras arancelarias recientes', d: 'Desde 2018, EE. UU. y China aplicaron aranceles recíprocos, y luego otros socios se sumaron a la disputa. Esto reabrió el debate sobre cómo equilibrar apertura y seguridad económica.' }
+      ] },
+      { t: 'Enfoques intermedios', d: 'En la práctica, la discusión rara vez es «todo o nada».', c: [
+        { t: 'Apertura gradual', d: 'Reducir aranceles por etapas para dar tiempo a las empresas a adaptarse.' },
+        { t: 'Protección selectiva y temporal', d: 'Proteger solo sectores concretos, con plazos, metas de productividad y revisión periódica (por ejemplo, mediante salvaguardias).' },
+        { t: 'Política industrial', d: 'El Estado apoya con crédito, tecnología y compras públicas a sectores con potencial exportador, sin cerrar la economía.' }
+      ] },
+      { t: 'Caso Ecuador', d: 'Una economía pequeña, abierta y dolarizada que debe decidir cuánto abrirse y a quién proteger.', c: [
+        { t: 'Estructura exportadora', d: 'Exporta sobre todo productos primarios y agroindustriales (banano, camarón, cacao, flores, atún), por lo que depende de mercados externos y de precios internacionales.' },
+        { t: 'Dolarización', d: 'Sin moneda propia, Ecuador no puede devaluar para ganar competitividad. Depende más de su productividad y de sus costos.' },
+        { t: 'Acuerdos comerciales', d: 'Es miembro de la OMC y de la Comunidad Andina, tiene el Acuerdo Multipartes con la Unión Europea (vigente desde 2017) y ha firmado otros acuerdos, como el de China.' },
+        { t: 'Sectores protegidos', d: 'Estudios locales señalan que los aranceles han protegido históricamente sectores como el textil, con efectos sobre empleo y precios.' },
+        { t: 'Dilema actual', d: 'Abrir más mercados mediante TLC y proteger empleo e industria local exige evaluar sector por sector, con datos y con medidas temporales.' }
+      ] },
+      { t: 'Criterios para decidir', d: 'Preguntas que ayudan a escoger una política comercial.', c: [
+        { t: 'Productividad y ventajas comparativas', d: '¿En qué productos el país es más competitivo y cuáles tienen potencial de mejora?' },
+        { t: 'Impacto en empleo y consumidores', d: '¿Quién gana y quién pierde con cada medida, y cuánto cuesta cada empleo protegido?' },
+        { t: 'Reacción de los socios', d: '¿Cómo respondería cada socio comercial? Las represalias pueden anular el beneficio de proteger.' },
+        { t: 'Riesgos geopolíticos', d: '¿Qué productos o proveedores son críticos para la seguridad económica y conviene diversificar?' }
+      ] }
+    ]
+  },
+  quiz: [
+    { q: '¿Qué sostiene la teoría de la ventaja comparativa de David Ricardo?', o: ['Un país solo debe exportar lo que produce más barato que todos los demás', 'Ambos países ganan si se especializan en lo que tienen menor costo de oportunidad', 'Los aranceles altos aumentan siempre la riqueza nacional', 'El comercio solo beneficia al país más grande'], a: 1, e: 'Ricardo mostró que incluso un país menos productivo en todo gana al comerciar, si se especializa donde su costo de oportunidad es menor.' },
+    { q: 'Un arancel ad valorem es:', o: ['Un monto fijo por cada unidad importada', 'Un límite a la cantidad que se puede importar', 'Un porcentaje aplicado sobre el valor de la mercadería importada', 'Un subsidio a las exportaciones'], a: 2, e: 'El arancel específico cobra un monto fijo por unidad; el ad valorem cobra un porcentaje del valor.' },
+    { q: '¿Qué argumento defiende proteger temporalmente a una industria joven hasta que sea competitiva?', o: ['Dumping', 'Ventaja absoluta', 'Industria naciente (Hamilton y List)', 'Heckscher-Ohlin'], a: 2, e: 'Hamilton (1791) y List (1841) plantearon que las industrias nuevas necesitan un periodo de protección para madurar.' },
+    { q: 'La ley Smoot-Hawley (1930) se recuerda como ejemplo de:', o: ['Escalada arancelaria con represalias', 'Creación del GATT', 'Una unión aduanera', 'Apertura unilateral del comercio'], a: 0, e: 'EE. UU. elevó sus aranceles en 1930. Otros países respondieron con barreras propias, lo que redujo el comercio durante la Gran Depresión.' },
+    { q: '¿Qué distingue a una unión aduanera de un área de libre comercio?', o: ['La unión aduanera no elimina barreras internas', 'Aplica un arancel externo común frente a terceros países', 'Solo incluye servicios', 'No requiere acuerdos entre países'], a: 1, e: 'En el área de libre comercio cada país mantiene su propio arancel frente a terceros; en la unión aduanera, el arancel externo es común.' },
+    { q: '¿Cuál es una desventaja típica del proteccionismo para los consumidores?', o: ['Más variedad de productos importados', 'Precios más altos y menos opciones', 'Mayor competencia extranjera', 'Menos impuestos a las importaciones'], a: 1, e: 'Al encarecer o limitar importaciones, los consumidores pagan más y eligen entre menos productos.' },
+    { q: '¿Por qué la dolarización pesa en el debate comercial de Ecuador?', o: ['Porque elimina todos los aranceles', 'Porque impide exportar', 'Porque el país no puede devaluar para ganar competitividad', 'Porque prohíbe firmar tratados'], a: 2, e: 'Sin moneda propia no hay devaluación: la competitividad depende de la productividad y de los costos.' },
+    { q: '¿Qué organización nació en 1995 como foro de reglas del comercio multilateral?', o: ['GATT', 'CAN', 'OMC', 'FMI'], a: 2, e: 'La Organización Mundial del Comercio sustituyó al GATT (1947) como marco institucional del comercio mundial.' }
+  ],
+  matchHeads: ['Concepto o autor', 'Idea asociada'],
+  match: [
+    { a: 'Adam Smith', b: 'Ventaja absoluta y división del trabajo' },
+    { a: 'David Ricardo', b: 'Ventaja comparativa y costo de oportunidad' },
+    { a: 'Friedrich List', b: 'Protección de la industria naciente' },
+    { a: 'Cuota de importación', b: 'Límite a la cantidad de producto que puede entrar' },
+    { a: 'Dumping', b: 'Vender en el exterior por debajo del precio normal' },
+    { a: 'Salvaguardia', b: 'Protección temporal ante un aumento súbito de importaciones' }
+  ],
+  scenario: {
+    title: 'Consultor de comercio exterior',
+    text: 'El gremio textil ecuatoriano pide subir los aranceles a las prendas importadas porque está perdiendo mercado. Al mismo tiempo, los exportadores de banano y camarón quieren ampliar los acuerdos comerciales del país. Como consultor, selecciona las decisiones que recomendarías.',
+    options: [
+      { t: 'Analizar productividad, empleo y costos del sector textil antes de decidir', ok: true, w: 'Una política comercial necesita datos del sector, no solo la presión del gremio.' },
+      { t: 'Aplicar una protección temporal, con metas y revisión, solo si el análisis muestra daño por importaciones', ok: true, w: 'Una salvaguardia con plazo y condiciones es un enfoque intermedio coherente con la teoría de la industria naciente.' },
+      { t: 'Mantener y ampliar acuerdos para exportadores con ventaja comparativa, como banano y camarón', ok: true, w: 'Abrir mercados favorece a los sectores donde Ecuador es más competitivo.' },
+      { t: 'Medir el impacto sobre consumidores y sobre empresas que importan insumos', ok: true, w: 'Proteger un sector puede encarecer los costos de otros y los precios al consumidor.' },
+      { t: 'Subir aranceles a todos los productos para proteger todo el empleo', ok: false, w: 'Una protección general eleva precios, invita represalias y reduce la eficiencia.' },
+      { t: 'Eliminar todos los aranceles de golpe, sin transición ni apoyo', ok: false, w: 'Sin gradualidad, los sectores expuestos pueden colapsar y el costo social sube.' },
+      { t: 'Decidir solo según la presión del gremio más grande', ok: false, w: 'Decidir por presión y no por evidencia deja fuera a consumidores y a otros sectores.' },
+      { t: 'Aplicar medidas sin considerar cómo reaccionarían los socios comerciales', ok: false, w: 'Las represalias pueden anular el beneficio y dañar las exportaciones.' }
+    ]
+  }
+};
+
+</script>
+<script>
+(function(){
+'use strict';
+var D = window.DATA;
+var KEY = 'mmg-' + D.id;
+function $(s, r){ return (r || document).querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+/* ---------- state ---------- */
+var S = { name:'', visited:{}, quiz:{}, match:{done:[], errors:0}, scen:{best:null, sel:[], submitted:false}, tab:'mapa', view:null, sel:null };
+try { var raw = localStorage.getItem(KEY); if (raw) { S = Object.assign(S, JSON.parse(raw)); } } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+
+/* ---------- tree ---------- */
+var BYID = {}, ALL = [];
+function build(n, id, depth, parent, k){
+  n.id = id; n.depth = depth; n.parent = parent; n.k = k; n.open = false; BYID[id] = n;
+  if (depth > 0) ALL.push(n);
+  (n.c || []).forEach(function(c, i){
+    build(c, id === 'r' ? String(i) : id + '.' + i, depth + 1, n, depth === 0 ? i % 7 : k);
+  });
+}
+var ROOT = D.tree; build(ROOT, 'r', 0, null, 0); ROOT.open = true;
+var N = ALL.length;
+
+/* ---------- scoring ---------- */
+var NODE_XP = 4, MAP_BONUS = 40, MAPTHR = Math.ceil(N * 0.7);
+var Q = D.quiz.length, QXP = 25, QBONUS = 50;
+var M = D.match.length, MXP = 15, MBONUS = 40;
+var SC = D.scenario, PTS_OK = 40, PTS_BAD = 25;
+var SCMAX = SC.options.filter(function(o){ return o.ok; }).length * PTS_OK;
+var MAXXP = N * NODE_XP + MAP_BONUS + Q * QXP + QBONUS + M * MXP + MBONUS + SCMAX;
+var LVN = ['Aprendiz','Explorador','Investigador','Analista','Estratega','Maestro'];
+var LV = [0, .10, .28, .48, .70, .90].map(function(f){ return Math.round(f * MAXXP / 10) * 10; });
+
+function visitedCount(){ return ALL.filter(function(n){ return S.visited[n.id]; }).length; }
+function quizCorrect(){ return D.quiz.filter(function(q, i){ return S.quiz['q' + i] === q.a; }).length; }
+function quizAnswered(){ return D.quiz.filter(function(q, i){ return S.quiz['q' + i] !== undefined; }).length; }
+function mapDone(){ return visitedCount() >= MAPTHR; }
+function quizDone(){ return quizAnswered() >= Q; }
+function matchDone(){ return S.match.done.length >= M; }
+function scenDone(){ return S.scen.best !== null; }
+function xp(){
+  var v = visitedCount(), qc = quizCorrect(), md = S.match.done.length;
+  var t = v * NODE_XP + (v >= MAPTHR ? MAP_BONUS : 0);
+  t += qc * QXP + (quizDone() && qc === Q ? QBONUS : 0);
+  t += md * MXP + (md >= M && S.match.errors === 0 ? MBONUS : 0);
+  t += S.scen.best || 0;
+  return t;
+}
+function levelIdx(x){ var i = 0; for (var j = 0; j < LV.length; j++) if (x >= LV[j]) i = j; return i; }
+
+var BADGES = [
+  { n:'Explorador', d:'Abriste el 70 % de los conceptos del mapa', on:function(){ return mapDone(); } },
+  { n:'Cartógrafo', d:'Visitaste todos los conceptos', on:function(){ return visitedCount() >= N; } },
+  { n:'Mente brillante', d:'Acertaste al menos el 75 % del quiz', on:function(){ return quizDone() && quizCorrect() >= Math.ceil(Q * .75); } },
+  { n:'Impecable', d:'Quiz perfecto', on:function(){ return quizDone() && quizCorrect() === Q; } },
+  { n:'Conector', d:'Uniste todas las parejas de conceptos', on:function(){ return matchDone(); } },
+  { n:'Estratega', d:'Obtuviste el 70 % o más en el reto final', on:function(){ return S.scen.best !== null && S.scen.best >= Math.ceil(SCMAX * .7); } },
+  { n:'Maestro del mapa', d:'Completaste las cuatro misiones', on:function(){ return mapDone() && quizDone() && matchDone() && scenDone(); } }
+];
+
+/* ---------- runtime ---------- */
+var curQ = (function(){ for (var i = 0; i < Q; i++) if (S.quiz['q' + i] === undefined) return i; return Q; })();
+var matchSel = null, flash = null, confirmReset = false, zoomMul = 1, firstMap = true;
+var mOrder = D.match.map(function(_, i){ return i; }).sort(function(){ return Math.random() - .5; });
+var toastT = null;
+
+/* ---------- HUD, tabs, intro ---------- */
+function renderHUD(){
+  var x = xp(), li = levelIdx(x), next = LV[li + 1];
+  var pct = next === undefined ? 100 : Math.round((x - LV[li]) / (next - LV[li]) * 100);
+  $('#hud').innerHTML =
+    '<div class="hudrow"><div class="brand"><span class="kicker">Mapa mental gamificado</span><strong>' + esc(D.short) + '</strong></div>' +
+    '<div class="lvl"><span class="lvname">Nivel ' + (li + 1) + ' · ' + LVN[li] + (S.name ? ' · ' + esc(S.name) : '') + '</span><span class="xpnum">' + x + ' / ' + MAXXP + ' XP</span></div></div>' +
+    '<div class="bar" role="progressbar" aria-valuenow="' + x + '" aria-valuemin="0" aria-valuemax="' + MAXXP + '"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="nextlv">' + (next === undefined ? 'Nivel máximo alcanzado' : 'Faltan ' + (next - x) + ' XP para ser ' + LVN[li + 1]) + '</div>';
+}
+function renderTabs(){
+  var T = [['mapa','1. Mapa mental',mapDone()],['quiz','2. Quiz',quizDone()],['conectar','3. Conector',matchDone()],['reto','4. Reto final',scenDone()],['logros','Mis logros',null]];
+  $('#tabs').innerHTML = T.map(function(t){
+    return '<button class="tab" role="tab" data-tab="' + t[0] + '" aria-selected="' + (S.tab === t[0]) + '">' +
+      (t[2] === null ? '' : '<span class="ck ' + (t[2] ? 'on' : '') + '">' + (t[2] ? '✓' : '') + '</span>') + t[1] + '</button>';
+  }).join('');
+}
+function renderIntro(){
+  $('#intro').innerHTML = '<h1>' + esc(D.title) + '</h1><p>' + esc(D.subtitle) + '</p>';
+}
+function renderFoot(){
+  $('#foot').innerHTML = '<h4>Fuentes</h4><ul>' + D.sources.map(function(s){
+    return '<li>' + (s.u ? '<a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</li>';
+  }).join('') + '</ul><p>' + esc(D.credit) + '</p>';
+}
+
+/* ---------- map ---------- */
+var ROW = 46, NH = 38, CW = 176, GAP = 26, RW = 200, RH = 76, PADV = 20;
+function visDepth(n, d){ var m = d; if (n.open && n.c) n.c.forEach(function(c){ m = Math.max(m, visDepth(c, d + 1)); }); return m; }
+function measure(n){ n.h = (n.open && n.c) ? n.c.reduce(function(a, c){ return a + measure(c); }, 0) : ROW; return n.h; }
+function place(n, top, side){
+  n.side = side;
+  if (n.open && n.c) {
+    var t = top; n.c.forEach(function(c){ place(c, t, side); t += c.h; });
+    n.cy = (n.c[0].cy + n.c[n.c.length - 1].cy) / 2;
+  } else { n.cy = top + ROW / 2; }
+}
+function nodeX(n, cx){
+  var off = (n.depth - 1) * (CW + GAP);
+  return n.side > 0 ? cx + RW / 2 + GAP + off : cx - RW / 2 - GAP - CW - off;
+}
+function canvasHTML(){
+  var right = [], left = [];
+  ROOT.c.forEach(function(n, i){ (i % 2 === 0 ? right : left).push(n); });
+  function side(arr){ var h = 0; arr.forEach(function(n){ h += measure(n); }); return h; }
+  var hr = side(right), hl = side(left);
+  var H = Math.max(hr, hl, RH) + 2 * PADV;
+  var maxD = 1; ROOT.c.forEach(function(n){ maxD = Math.max(maxD, visDepth(n, 1)); });
+  var W = 2 * (RW / 2 + GAP + maxD * (CW + GAP)) + 10, cx = W / 2, cy = H / 2;
+  [[right, hr, 1], [left, hl, -1]].forEach(function(p){
+    var t = (H - p[1]) / 2; p[0].forEach(function(n){ place(n, t, p[2]); t += n.h; });
+  });
+  var paths = '', nodes = '';
+  function walk(n){
+    n.c.forEach(function(c){
+      var px, py, qx, qy = c.cy;
+      if (n.id === 'r') { px = cx + c.side * RW / 2; py = cy; } else { px = n.side > 0 ? nodeX(n, cx) + CW : nodeX(n, cx); py = n.cy; }
+      qx = c.side > 0 ? nodeX(c, cx) : nodeX(c, cx) + CW;
+      var mx = (px + qx) / 2;
+      paths += '<path d="M' + px + ' ' + py + ' C' + mx + ' ' + py + ',' + mx + ' ' + qy + ',' + qx + ' ' + qy + '" style="stroke:var(--b' + c.k + ')"/>';
+      if (c.open && c.c) walk(c);
+    });
+  }
+  walk(ROOT);
+  function drawNodes(n){
+    n.c.forEach(function(c){
+      nodes += '<button class="node d' + c.depth + (S.visited[c.id] ? ' seen' : '') + (S.sel === c.id ? ' sel' : '') + '" data-node="' + c.id + '" style="left:' + nodeX(c, cx) + 'px;top:' + (c.cy - NH / 2) + 'px;--w:' + CW + 'px;--h:' + NH + 'px;--c:var(--b' + c.k + ');--cbg:var(--b' + c.k + 'bg)" title="' + esc(c.t) + '">' +
+        '<span class="t">' + esc(c.t) + '</span>' + (c.c ? '<span class="tog">' + (c.open ? '−' : '+') + '</span>' : '') + '</button>';
+      if (c.open && c.c) drawNodes(c);
+    });
+  }
+  drawNodes(ROOT);
+  var root = '<button class="node root' + (S.sel === 'r' ? ' sel' : '') + '" data-node="r" style="left:' + (cx - RW / 2) + 'px;top:' + (cy - RH / 2) + 'px;--w:' + RW + 'px;--h:' + RH + 'px;--c:var(--fg);--cbg:var(--fg)"><span class="t">' + esc(ROOT.t) + '</span></button>';
+  var avail = Math.min(window.innerWidth, 1240) - 34;
+  var z = Math.max(.55, Math.min(1, avail / W)) * zoomMul;
+  return '<div class="canvas" style="width:' + W + 'px;height:' + H + 'px;zoom:' + z.toFixed(3) + '"><svg width="' + W + '" height="' + H + '" aria-hidden="true">' + paths + '</svg>' + nodes + root + '</div>';
+}
+function listHTML(n){
+  return n.c.map(function(c){
+    return '<div class="li"><button class="' + (S.visited[c.id] ? 'seen ' : '') + (S.sel === c.id ? 'sel' : '') + '" data-node="' + c.id + '" style="--c:var(--b' + c.k + ');--cbg:var(--b' + c.k + 'bg)"><span class="t">' + esc(c.t) + '</span>' +
+      (c.c ? '<span class="tog">' + (c.open ? '−' : '+') + '</span>' : '') + '</button>' +
+      (c.open && c.c ? '<div class="kids">' + listHTML(c) + '</div>' : '') + '</div>';
+  }).join('');
+}
+function detailHTML(){
+  var n = S.sel ? BYID[S.sel] : null;
+  if (!n) return '<aside class="detail empty"><h3>Empieza por una rama</h3><p>Toca un nodo para abrirlo. Los nodos con borde punteado todavía no los exploraste; cada concepto nuevo suma ' + NODE_XP + ' XP.</p></aside>';
+  var path = [], p = n.parent; while (p && p.id !== 'r') { path.unshift(p.t); p = p.parent; }
+  var chips = (n.c || []).map(function(c){
+    return '<button class="chip ' + (S.visited[c.id] ? 'seen' : '') + '" data-node="' + c.id + '" style="--c:var(--b' + c.k + ')">' + esc(c.t) + '</button>';
+  }).join('');
+  return '<aside class="detail" style="--c:var(--b' + n.k + ')"><div class="crumb">' + esc(path.length ? path.join(' › ') : D.short) + '</div><h3>' + esc(n.t) + '</h3><p>' + esc(n.d) + '</p>' +
+    (chips ? '<div class="chips">' + chips + '</div>' : '') + '</aside>';
+}
+function viewMap(){
+  var vc = visitedCount(), pct = Math.min(100, Math.round(vc / MAPTHR * 100));
+  var list = S.view ? S.view === 'lista' : window.innerWidth < 760;
+  var h = '<div class="mapbar"><div class="mission"><span>Misión 1: explora ' + MAPTHR + ' de ' + N + ' conceptos</span><div class="mini"><i style="width:' + pct + '%"></i></div><b>' + vc + '/' + N + '</b></div>' +
+    '<div class="tools"><div class="seg"><button data-act="view-mapa" aria-pressed="' + !list + '">Mapa</button><button data-act="view-lista" aria-pressed="' + list + '">Lista</button></div>' +
+    '<button class="btn sm" data-act="expand">Abrir todo</button><button class="btn sm" data-act="collapse">Cerrar todo</button>' +
+    (list ? '' : '<button class="btn sm" data-act="zoomout" aria-label="Alejar">A−</button><button class="btn sm" data-act="zoomin" aria-label="Acercar">A+</button>') + '</div></div>';
+  h += list ? '<div class="list">' + listHTML(ROOT) + '</div>' : '<div class="mapwrap" id="mapwrap">' + canvasHTML() + '</div>';
+  return h + detailHTML();
+}
+
+/* ---------- quiz ---------- */
+function viewQuiz(){
+  if (curQ >= Q) {
+    var c = quizCorrect();
+    return '<div class="panel"><h2>Resultado del quiz</h2><div class="score">' + c + ' / ' + Q + '</div>' +
+      '<p class="lead">' + (c === Q ? 'Quiz perfecto. Sumaste ' + (Q * QXP + QBONUS) + ' XP.' : 'Sumaste ' + (c * QXP) + ' XP. Con un quiz perfecto ganas ' + QBONUS + ' XP extra.') + '</p>' +
+      '<div class="dots" style="margin-bottom:16px">' + D.quiz.map(function(q, i){ return '<i class="' + (S.quiz['q' + i] === q.a ? 'ok' : 'no') + '"></i>'; }).join('') + '</div>' +
+      '<div class="row"><button class="btn primary" data-act="retryquiz">Repetir quiz</button><button class="btn" data-tab="conectar">Ir al Conector</button></div></div>';
+  }
+  var q = D.quiz[curQ], ans = S.quiz['q' + curQ], done = ans !== undefined;
+  var h = '<div class="panel"><div class="qhead"><h2>Misión 2: Quiz</h2><div class="dots">' + D.quiz.map(function(qq, i){
+    var a = S.quiz['q' + i]; return '<i class="' + (i === curQ ? 'cur' : a === undefined ? '' : a === qq.a ? 'ok' : 'no') + '"></i>';
+  }).join('') + '</div></div>';
+  h += '<p class="lead" style="margin-bottom:6px">Pregunta ' + (curQ + 1) + ' de ' + Q + ' · ' + QXP + ' XP por acierto</p><p class="q">' + esc(q.q) + '</p><div class="opts">';
+  q.o.forEach(function(o, i){
+    var cls = !done ? '' : i === q.a ? ' good' : i === ans ? ' bad' : '';
+    h += '<button class="opt' + cls + '" data-opt="' + i + '"' + (done ? ' disabled' : '') + '><span class="l">' + 'ABCD'[i] + '</span><span>' + esc(o) + '</span></button>';
+  });
+  h += '</div>';
+  if (done) {
+    h += '<div class="fb"><strong>' + (ans === q.a ? 'Correcto.' : 'No era esa opción.') + '</strong>' + esc(q.e) + '</div>' +
+      '<div class="row" style="margin-top:14px"><button class="btn primary" data-act="next">' + (curQ + 1 >= Q ? 'Ver resultado' : 'Siguiente') + '</button></div>';
+  }
+  return h + '</div>';
+}
+
+/* ---------- match ---------- */
+function viewMatch(){
+  var h = '<div class="panel"><h2>Misión 3: Conector</h2><p class="lead">Toca un concepto de la izquierda y luego su pareja de la derecha. ' + MXP + ' XP por pareja y ' + MBONUS + ' XP extra si no te equivocas.</p>' +
+    '<div class="row" style="margin-bottom:12px"><span class="errs">Parejas: ' + S.match.done.length + '/' + M + ' · Errores: ' + S.match.errors + '</span></div><div class="mgrid"><div class="mcol"><h4>' + esc(D.matchHeads[0]) + '</h4>';
+  D.match.forEach(function(p, i){
+    var dn = S.match.done.indexOf(i) >= 0;
+    h += '<button class="mi' + (dn ? ' done' : matchSel === i ? ' pick' : '') + (flash && flash.l === i ? ' shake' : '') + '" data-l="' + i + '"' + (dn ? ' disabled' : '') + '>' + esc(p.a) + '</button>';
+  });
+  h += '</div><div class="mcol"><h4>' + esc(D.matchHeads[1]) + '</h4>';
+  mOrder.forEach(function(i){
+    var dn = S.match.done.indexOf(i) >= 0;
+    h += '<button class="mi' + (dn ? ' done' : '') + (flash && flash.r === i ? ' shake' : '') + '" data-r="' + i + '"' + (dn ? ' disabled' : '') + '>' + esc(D.match[i].b) + '</button>';
+  });
+  h += '</div></div>';
+  if (matchDone()) h += '<div class="fb"><strong>Misión cumplida.</strong>' + (S.match.errors === 0 ? 'Sin errores: ganaste el bono de ' + MBONUS + ' XP.' : 'Terminaste con ' + S.match.errors + ' error(es). Puedes reiniciar para intentar un resultado sin errores.') + '</div>';
+  h += '<div class="row" style="margin-top:14px"><button class="btn" data-act="retrymatch">Reiniciar parejas</button></div>';
+  return h + '</div>';
+}
+
+/* ---------- scenario ---------- */
+function scenScore(){
+  var s = 0; SC.options.forEach(function(o, i){ if (S.scen.sel.indexOf(i) >= 0) s += o.ok ? PTS_OK : -PTS_BAD; });
+  return Math.max(0, s);
+}
+function viewScen(){
+  var sub = S.scen.submitted;
+  var h = '<div class="panel"><h2>Misión 4: ' + esc(SC.title) + '</h2><div class="case">' + esc(SC.text) + '</div>' +
+    '<p class="lead">Marca las decisiones que recomendarías. Cada acierto suma ' + PTS_OK + ' XP y cada decisión equivocada resta ' + PTS_BAD + ' XP. Máximo: ' + SCMAX + ' XP.</p><div class="opts">';
+  SC.options.forEach(function(o, i){
+    var on = S.scen.sel.indexOf(i) >= 0, cls = '';
+    if (sub) cls = on ? (o.ok ? ' good' : ' bad') : (o.ok ? ' miss' : '');
+    h += '<label class="sc' + (on && !sub ? ' on' : '') + cls + '"><input type="checkbox" data-sc="' + i + '"' + (on ? ' checked' : '') + (sub ? ' disabled' : '') + '><span>' +
+      (sub ? '<span class="tag ' + (on ? (o.ok ? 'g' : 'b') : (o.ok ? 'w' : 'g')) + '" style="' + (!on && !o.ok ? 'display:none' : '') + '">' + (on ? (o.ok ? 'Acierto' : 'Error') : (o.ok ? 'Te faltó' : '')) + '</span>' : '') +
+      esc(o.t) + (sub ? '<small>' + esc(o.w) + '</small>' : '') + '</span></label>';
+  });
+  h += '</div>';
+  if (sub) {
+    var sc = scenScore();
+    h += '<div class="fb"><strong>Tu decisión: ' + sc + ' de ' + SCMAX + ' XP</strong>' + (sc >= Math.ceil(SCMAX * .7) ? 'Buen criterio: combinaste análisis, medidas selectivas y visión de riesgos.' : 'Revisa las explicaciones de cada opción e inténtalo otra vez. Se conserva tu mejor resultado.') + '</div>' +
+      '<div class="row" style="margin-top:14px"><button class="btn primary" data-act="retryscen">Intentar otra vez</button><button class="btn" data-tab="logros">Ver mis logros</button></div>';
+  } else {
+    h += '<div class="row" style="margin-top:14px"><button class="btn primary" data-act="evalscen">Evaluar mi decisión</button>' + (S.scen.best !== null ? '<span class="errs">Mejor resultado: ' + S.scen.best + ' XP</span>' : '') + '</div>';
+  }
+  return h + '</div>';
+}
+
+/* ---------- achievements ---------- */
+function summaryText(){
+  var x = xp(), li = levelIdx(x);
+  return 'Mapa mental gamificado: ' + D.title + '\nJugador: ' + (S.name || 'sin nombre') + '\nNivel: ' + LVN[li] + ' · ' + x + ' / ' + MAXXP + ' XP\n' +
+    'Mapa: ' + visitedCount() + '/' + N + ' conceptos · Quiz: ' + (quizDone() ? quizCorrect() + '/' + Q : 'pendiente') + ' · Conector: ' + S.match.done.length + '/' + M + ' · Reto final: ' + (S.scen.best === null ? 'pendiente' : S.scen.best + '/' + SCMAX) + '\n' +
+    'Insignias: ' + (BADGES.filter(function(b){ return b.on(); }).map(function(b){ return b.n; }).join(', ') || 'ninguna aún');
+}
+function viewLogros(){
+  var x = xp(), li = levelIdx(x);
+  var h = '<div class="panel"><h2>Mis logros</h2><p class="lead">Tu avance se guarda en este navegador.</p>' +
+    '<div class="field"><label for="name">Tu nombre (aparece en la constancia)</label><input id="name" type="text" maxlength="60" autocomplete="name" value="' + esc(S.name) + '"></div><div class="grid2">';
+  h += '<div><h3>Niveles</h3><ol class="ladder">' + LVN.map(function(n, i){ return '<li class="' + (i <= li ? 'on' : '') + (i === li ? ' cur' : '') + '"><span>' + n + '</span><span>' + LV[i] + ' XP</span></li>'; }).join('') + '</ol></div>';
+  h += '<div><h3>Insignias</h3><ul class="badges">' + BADGES.map(function(b){ var on = b.on(); return '<li class="' + (on ? 'on' : '') + '"><span class="seal">' + (on ? '✓' : '·') + '</span><span><strong>' + b.n + '</strong><small>' + b.d + '</small></span></li>'; }).join('') + '</ul></div></div>';
+  h += '<div class="cert"><span class="kicker">Constancia de progreso</span><h3>' + esc(S.name || 'Jugador sin nombre') + '</h3><div>' + esc(D.title) + '</div><dl>' +
+    '<dt>Nivel</dt><dd>' + LVN[li] + '</dd><dt>Puntaje</dt><dd>' + x + ' de ' + MAXXP + ' XP</dd>' +
+    '<dt>Mapa</dt><dd>' + visitedCount() + ' de ' + N + ' conceptos</dd><dt>Quiz</dt><dd>' + (quizDone() ? quizCorrect() + ' de ' + Q : 'pendiente') + '</dd>' +
+    '<dt>Conector</dt><dd>' + S.match.done.length + ' de ' + M + ' parejas</dd><dt>Reto final</dt><dd>' + (S.scen.best === null ? 'pendiente' : S.scen.best + ' de ' + SCMAX + ' XP') + '</dd>' +
+    '<dt>Fecha</dt><dd>' + new Date().toLocaleDateString('es-EC', { day:'numeric', month:'long', year:'numeric' }) + '</dd></dl></div>' +
+    '<div class="row" style="margin-top:16px"><button class="btn primary" data-act="copy">Copiar resumen</button>' +
+    (confirmReset ? '<button class="btn" data-act="doreset" style="border-color:var(--bad);color:var(--bad)">Confirmar reinicio</button><button class="btn" data-act="cancelreset">Cancelar</button>' : '<button class="btn" data-act="reset">Reiniciar progreso</button>') +
+    '</div><div id="copyout"></div></div>';
+  return h;
+}
+
+/* ---------- render ---------- */
+function renderView(){
+  var mw = $('#mapwrap'), sl = mw ? mw.scrollLeft : 0, st = mw ? mw.scrollTop : 0;
+  var v = { mapa:viewMap, quiz:viewQuiz, conectar:viewMatch, reto:viewScen, logros:viewLogros }[S.tab]();
+  $('#view').innerHTML = v;
+  mw = $('#mapwrap');
+  if (mw) {
+    if (firstMap) { mw.scrollLeft = Math.max(0, (mw.scrollWidth - mw.clientWidth) / 2); firstMap = false; }
+    else { mw.scrollLeft = sl; mw.scrollTop = st; }
+  }
+}
+function renderAll(){ renderHUD(); renderTabs(); renderView(); }
+function toast(msg){
+  var t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('show'); }, 2300);
+}
+function change(fn){
+  var b = xp(), bl = levelIdx(b);
+  fn(); save(); renderAll();
+  var a = xp(), al = levelIdx(a);
+  if (al > bl) toast('¡Subiste de nivel! Ahora eres ' + LVN[al] + ' (+' + (a - b) + ' XP)');
+  else if (a > b) toast('+' + (a - b) + ' XP');
+  else if (a < b) toast((a - b) + ' XP');
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', function(e){
+  var el = e.target.closest('[data-node],[data-tab],[data-act],[data-opt],[data-l],[data-r]');
+  if (!el) return;
+  if (el.dataset.tab) { S.tab = el.dataset.tab; save(); renderTabs(); renderView(); window.scrollTo({ top: $('#tabs').offsetTop - 70, behavior: 'smooth' }); return; }
+  if (el.dataset.node !== undefined) {
+    var id = el.dataset.node, n = BYID[id];
+    change(function(){ S.sel = id; if (id !== 'r') { S.visited[id] = 1; if (n.c) n.open = !n.open; } });
+    return;
+  }
+  if (el.dataset.opt !== undefined) {
+    if (S.quiz['q' + curQ] !== undefined) return;
+    var k = Number(el.dataset.opt); change(function(){ S.quiz['q' + curQ] = k; }); return;
+  }
+  if (el.dataset.l !== undefined) { matchSel = Number(el.dataset.l); flash = null; renderView(); return; }
+  if (el.dataset.r !== undefined) {
+    var r = Number(el.dataset.r);
+    if (matchSel === null) { toast('Primero elige un concepto de la izquierda'); return; }
+    if (r === matchSel) { change(function(){ S.match.done.push(r); matchSel = null; flash = null; }); }
+    else { var l = matchSel; change(function(){ S.match.errors++; flash = { l: l, r: r }; matchSel = null; }); flash = null; }
+    return;
+  }
+  switch (el.dataset.act) {
+    case 'view-mapa': S.view = 'mapa'; save(); renderView(); break;
+    case 'view-lista': S.view = 'lista'; save(); renderView(); break;
+    case 'expand': ALL.forEach(function(n){ if (n.c) n.open = true; }); renderView(); break;
+    case 'collapse': ALL.forEach(function(n){ n.open = false; }); renderView(); break;
+    case 'zoomin': zoomMul = Math.min(1.6, zoomMul + .15); renderView(); break;
+    case 'zoomout': zoomMul = Math.max(.6, zoomMul - .15); renderView(); break;
+    case 'next': curQ++; renderView(); break;
+    case 'retryquiz': change(function(){ S.quiz = {}; curQ = 0; }); break;
+    case 'retrymatch': change(function(){ S.match = { done: [], errors: 0 }; matchSel = null; mOrder.sort(function(){ return Math.random() - .5; }); }); break;
+    case 'evalscen': change(function(){ S.scen.submitted = true; var sc = scenScore(); S.scen.best = Math.max(S.scen.best || 0, sc); }); break;
+    case 'retryscen': S.scen.submitted = false; S.scen.sel = []; save(); renderView(); break;
+    case 'reset': confirmReset = true; renderView(); break;
+    case 'cancelreset': confirmReset = false; renderView(); break;
+    case 'doreset':
+      confirmReset = false;
+      S = { name: S.name, visited: {}, quiz: {}, match: { done: [], errors: 0 }, scen: { best: null, sel: [], submitted: false }, tab: 'logros', view: S.view, sel: null };
+      ALL.forEach(function(n){ n.open = false; }); curQ = 0; matchSel = null; save(); renderAll(); toast('Progreso reiniciado'); break;
+    case 'copy':
+      var txt = summaryText();
+      var showBox = function(){ $('#copyout').innerHTML = '<textarea class="copybox" id="cb" readonly>' + esc(txt) + '</textarea>'; var cb = $('#cb'); if (cb) { cb.focus(); cb.select(); } };
+      try { navigator.clipboard.writeText(txt).then(function(){ toast('Resumen copiado'); }, showBox); } catch (err) { showBox(); }
+      break;
+  }
+});
+document.addEventListener('change', function(e){
+  var el = e.target; if (el.dataset && el.dataset.sc !== undefined) {
+    var i = Number(el.dataset.sc), at = S.scen.sel.indexOf(i);
+    if (el.checked && at < 0) S.scen.sel.push(i); else if (!el.checked && at >= 0) S.scen.sel.splice(at, 1);
+    save();
+  }
+});
+document.addEventListener('input', function(e){
+  if (e.target.id === 'name') { S.name = e.target.value; save(); renderHUD(); }
+});
+var rz; window.addEventListener('resize', function(){ clearTimeout(rz); rz = setTimeout(function(){ if (S.tab === 'mapa') renderView(); }, 200); });
+
+renderIntro(); renderFoot(); renderAll();
+})();
+
+</script>
+
+</body></html>
