@@ -1,0 +1,449 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Atlas de Cinco Libros</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Concepto: atlas de lectura. Un mapa mental radial por lados (3 libros a la derecha, 2 a la izquierda) con XP, niveles, puentes entre libros, quiz e insignias. */
+:root{
+  --bg:#EEF2F4; --surface:#FFFFFF; --surface2:#E2E9ED; --fg:#13202A; --muted:#52636F; --line:#C6D2D9; --on:#FFFFFF;
+  --b1:#0B7A6E; --b2:#2B62C4; --b3:#B8325F; --b4:#9A6200; --b5:#5E7A12;
+  --good:#1B7F3B; --bad:#B3261E;
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E161C; --surface:#16212A; --surface2:#1E2C37; --fg:#E7EEF2; --muted:#9BADB9; --line:#2B3B47; --on:#0E161C;
+  --b1:#4FD1BF; --b2:#7FA8FF; --b3:#FF8FB1; --b4:#F0B84A; --b5:#B5D45A; --good:#6FD08C; --bad:#FF8A80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E161C; --surface:#16212A; --surface2:#1E2C37; --fg:#E7EEF2; --muted:#9BADB9; --line:#2B3B47; --on:#0E161C;
+  --b1:#4FD1BF; --b2:#7FA8FF; --b3:#FF8FB1; --b4:#F0B84A; --b5:#B5D45A; --good:#6FD08C; --bad:#FF8A80; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-body)}
+.wrap{max-width:1240px;margin:0 auto;padding-block:22px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:clamp(30px,6vw,54px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(22px,3.2vw,30px);font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
+h3{font-size:20px;font-weight:600}
+p{margin:0}
+.sub{color:var(--muted);max-width:64ch;margin-top:10px}
+.lab{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+section{margin-top:44px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.node:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.btn{background:var(--fg);color:var(--bg);border:0;border-radius:10px;padding:10px 16px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:hover{opacity:.88}
+
+/* HUD */
+.hud{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.lvl{font-family:var(--f-display);font-size:28px;font-weight:800;line-height:1.1;margin:4px 0 12px}
+.bar{height:12px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--b1),var(--b2) 35%,var(--b3) 65%,var(--b4));border-radius:99px;transition:width .5s}
+.xpline{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat b{display:block;font-family:var(--f-display);font-size:26px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+
+/* Toggle */
+.tools{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:22px 0 12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:9px 16px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:4px;border:2px solid var(--fg);display:inline-block}
+.sw.f{background:var(--fg)}
+
+/* Map */
+.mapbox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.mapbox svg{display:block;min-width:960px;width:100%;height:auto}
+.edge{fill:none;stroke:var(--c);stroke-width:1.8;opacity:.4}
+.edge.b{stroke-width:3;opacity:.75}
+.edge.on{opacity:1}
+.hub{fill:var(--fg)}
+.th{fill:var(--bg);font:700 14px var(--f-display);pointer-events:none}
+.node{cursor:pointer;outline:none}
+.node rect{fill:var(--surface);stroke:var(--c);stroke-width:2;transition:stroke-width .15s}
+.node .t{fill:var(--fg);font:500 12.5px var(--f-body);pointer-events:none}
+.node .tb{fill:var(--fg);font:800 14px var(--f-display);pointer-events:none}
+.node.done rect{fill:var(--c)}
+.node.done .t,.node.done .tb{fill:var(--on)}
+.node:hover rect,.node.sel rect{stroke-width:4;stroke:var(--fg)}
+.node .cnt{fill:var(--bg);stroke:var(--c);stroke-width:2}
+.node .ct{fill:var(--fg);font:700 10px var(--f-body);pointer-events:none}
+
+/* Panel */
+.panel{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;scroll-margin-top:12px}
+.kick{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--c,var(--muted))}
+.panel h3{margin:6px 0 10px;font-size:24px}
+.panel ul,.rowbody ul{margin:0;padding-left:20px;display:grid;gap:8px;max-width:78ch}
+.panel li::marker,.rowbody li::marker{color:var(--c)}
+.pnav{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{border:1.5px solid var(--c);background:var(--surface);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500}
+.chip.done{background:var(--c);color:var(--on)}
+.xpnote{font-size:13px;color:var(--muted)}
+
+/* List view */
+.list{display:grid;gap:14px}
+.bcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.bhead{width:100%;text-align:left;border:0;background:var(--surface);padding:16px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.bhead b{font-family:var(--f-display);font-size:19px;color:var(--c)}
+.bhead small{color:var(--muted);display:block;font-size:13px}
+.bhead .n{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;white-space:nowrap}
+.bidea{padding:0 16px 12px;color:var(--muted)}
+.rows{border-top:1px solid var(--line)}
+.row{width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--surface);padding:12px 16px;display:flex;gap:10px;align-items:center}
+.row:last-child{border-bottom:0}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--c);flex:none}
+.row.done .dot{background:var(--c)}
+.rowbody{padding:4px 16px 16px 40px;background:var(--surface)}
+
+/* Bridges */
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:16px}
+.bridge{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pair{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:600;border-radius:99px;padding:3px 10px;background:var(--c);color:var(--on)}
+.bridge h3{font-size:18px}
+.bridge .locked{color:var(--muted);font-size:14px}
+
+/* Quiz */
+.qtabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.qtab{border:1.5px solid var(--c);background:var(--surface);border-radius:12px;padding:9px 14px;font-weight:600;font-size:14px}
+.qtab[aria-pressed="true"]{background:var(--c);color:var(--on)}
+.qbox{margin-top:14px}
+.qprog{display:flex;gap:6px;margin-bottom:14px}
+.qprog i{flex:1;height:6px;border-radius:9px;background:var(--surface2)}
+.qprog i.on{background:var(--c)}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opt{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+.opt:hover:not(:disabled){border-color:var(--fg)}
+.opt.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface))}
+.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.opt:disabled{cursor:default;color:var(--fg)}
+.fb{margin-top:12px;font-size:14px;color:var(--muted)}
+.score{font-family:var(--f-display);font-size:44px;font-weight:800;color:var(--c)}
+
+/* Badges */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:16px}
+.badge{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.badge.off{opacity:.55}
+.hex{width:48px;height:52px;flex:none}
+.hex polygon{fill:var(--c);}
+.badge.off .hex polygon{fill:var(--surface2)}
+.hex text{fill:var(--on);font:800 20px var(--f-display)}
+.badge.off .hex text{fill:var(--muted)}
+.badge b{display:block;font-family:var(--f-display);font-size:16px}
+.badge span{font-size:13px;color:var(--muted)}
+.foot{margin-top:44px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;color:var(--muted);font-size:13px}
+
+/* Toast */
+.toast{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;z-index:20}
+.toast div{background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;opacity:0;transform:translateY(8px);transition:.25s}
+.toast.show div{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="lab">Tecnología · tiempo · humanidad</div>
+    <h1>Atlas de cinco libros</h1>
+    <p class="sub">Un mapa mental para recorrer a Schwab, Bauman, Han y Harari (dos veces). Descubre nodos, cruza puentes entre obras, responde el quiz y sube de nivel.</p>
+  </header>
+
+  <div class="hud" id="hud"></div>
+
+  <section aria-labelledby="t-mapa" style="margin-top:28px">
+    <h2 id="t-mapa">El mapa</h2>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Vista">
+        <button data-act="view" data-v="map" aria-pressed="true">Mapa</button>
+        <button data-act="view" data-v="list" aria-pressed="false">Lista</button>
+      </div>
+      <div class="legend"><span><i class="sw"></i>Por descubrir</span><span><i class="sw f"></i>Descubierto</span><span>Toca un libro o una rama</span></div>
+    </div>
+    <div class="mapbox" id="mapbox"><svg id="svg" viewBox="0 0 1180 780" role="group" aria-label="Mapa mental de los cinco libros"></svg></div>
+    <div id="list" class="list" hidden></div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+  </section>
+
+  <section aria-labelledby="t-puentes">
+    <h2 id="t-puentes">Puentes entre libros</h2>
+    <p class="sub">Las ideas dialogan entre sí. Descubre cada conexión para ganar XP.</p>
+    <div class="grid2" id="links"></div>
+  </section>
+
+  <section aria-labelledby="t-quiz">
+    <h2 id="t-quiz">Quiz por libro</h2>
+    <p class="sub">Cuatro preguntas por libro. Cada acierto nuevo suma 20 XP y un 4/4 da 30 XP extra.</p>
+    <div class="qtabs" id="qtabs"></div>
+    <div class="card qbox" id="qbox"></div>
+  </section>
+
+  <section aria-labelledby="t-ins">
+    <h2 id="t-ins">Insignias</h2>
+    <div class="badges" id="badges"></div>
+  </section>
+
+  <div class="foot">
+    <p>Resúmenes elaborados por Claude como guía de estudio. Contrasta los detalles con las obras originales.</p>
+    <button class="btn ghost" id="reset" data-act="reset">Reiniciar progreso</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"><div></div></div>
+
+<script>
+const BOOKS=[
+{id:'schwab',n:1,lbl:['La cuarta revolución','industrial'],short:'La cuarta revolución industrial',author:'Klaus Schwab',year:2016,
+ idea:'Una revolución que fusiona lo físico, lo digital y lo biológico a velocidad exponencial, y que exige decidir con valores cómo queremos vivirla.',
+ nodes:[
+ {id:'schwab-1',label:'Cuatro|revoluciones',title:'Las cuatro revoluciones industriales',pts:['Primera (c. 1760-1840): el vapor y la mecanización sustituyen la fuerza muscular.','Segunda (fines del siglo XIX): electricidad, cadena de montaje y producción en masa.','Tercera (desde los años 60): semiconductores, computación y automatización.','Cuarta (desde ~2000): internet móvil, sensores baratos, inteligencia artificial y aprendizaje automático.']},
+ {id:'schwab-2',label:'Por qué es|distinta',title:'Por qué no es una simple extensión de la tercera',pts:['Velocidad: avanza de forma exponencial, no lineal.','Amplitud y profundidad: combina muchas tecnologías y cambia qué hacemos, cómo lo hacemos y quiénes somos.','Impacto sistémico: transforma países, empresas, industrias y a la sociedad entera.']},
+ {id:'schwab-3',label:'Megatendencias',title:'Megatendencias: físicas, digitales y biológicas',pts:['Físicas: vehículos autónomos, impresión 3D, robótica avanzada, nuevos materiales.','Digitales: internet de las cosas, blockchain y plataformas bajo demanda.','Biológicas: genética, biología sintética y neurotecnología.','La frontera entre estos tres mundos se vuelve cada vez más borrosa.']},
+ {id:'schwab-4',label:'Impactos|y desafíos',title:'Impactos y desafíos',pts:['Economía: crecimiento y productividad, pero también riesgo de mayor desigualdad.','Empleo: automatización de tareas y polarización entre trabajos muy y poco calificados.','Empresas y gobiernos: nuevos modelos de negocio y una regulación que debe volverse ágil.','Individuo: privacidad, identidad, ética y salud quedan en juego.']},
+ {id:'schwab-5',label:'Cuatro|inteligencias',title:'Cuatro inteligencias para afrontarla',pts:['Contextual (la mente): entender cómo se conectan las fuerzas que cambian el mundo.','Emocional (el corazón): empatía y cooperación.','Inspirada (el alma): propósito y valores compartidos.','Física (el cuerpo): cuidar la salud y el bienestar propios.','Idea guía: poner a las personas y los valores en el centro de la tecnología.']}]},
+{id:'bauman',n:2,lbl:['Modernidad','líquida'],short:'Modernidad líquida',author:'Zygmunt Bauman',year:2000,
+ idea:'Vivimos en una época donde nada conserva su forma: instituciones, trabajos, identidades y vínculos se vuelven flexibles, veloces y frágiles.',
+ nodes:[
+ {id:'bauman-1',label:'Sólido|vs. líquido',title:'De lo sólido a lo líquido',pts:['La modernidad “sólida” quiso derretir lo tradicional para levantar un orden duradero y planificado.','La modernidad “líquida” ya no solidifica: nada conserva su forma por mucho tiempo.','Los fluidos se adaptan a su recipiente, como las vidas, instituciones y relaciones actuales.','Cambio de foco: de las estructuras estables a la flexibilidad y la velocidad.']},
+ {id:'bauman-2',label:'Emancipación',title:'Emancipación',pts:['La modernidad liberó al individuo de ataduras heredadas (clase, tradición, oficio).','Pero esa libertad llegó sin un proyecto colectivo claro para transformar la sociedad.','Los problemas sociales tienden a vivirse como asuntos privados y personales.']},
+ {id:'bauman-3',label:'Individualidad',title:'Individualidad',pts:['La identidad deja de ser un destino asignado y pasa a ser una tarea individual.','Cada persona debe resolver con recursos propios problemas de origen social.','El consumo se convierte en camino para construir identidad.','Crecen la inseguridad, la incertidumbre y el miedo.']},
+ {id:'bauman-4',label:'Tiempo|y espacio',title:'Tiempo y espacio',pts:['El espacio deja de ser un obstáculo: dominan la velocidad y la instantaneidad.','El poder se vuelve móvil y extraterritorial; manda quien se mueve más ligero.','El capital “ligero” escapa de los compromisos con lo local.']},
+ {id:'bauman-5',label:'Trabajo|y comunidad',title:'Trabajo y comunidad',pts:['El trabajo deja de ser un proyecto de vida estable y se vuelve episódico, flexible y precario.','Se debilitan los vínculos de largo plazo entre empleado y empresa.','La comunidad aparece como promesa de seguridad, pero choca con el deseo de libertad.','Seguridad y libertad: dos valores que nunca se concilian del todo.']}]},
+{id:'han',n:3,lbl:['La sociedad','del cansancio'],short:'La sociedad del cansancio',author:'Byung-Chul Han',year:2010,
+ idea:'El exceso de positividad (“sí se puede”) nos vuelve empresarios de nosotros mismos: nos exigimos y agotamos sin que nadie nos obligue.',
+ nodes:[
+ {id:'han-1',label:'Disciplina|a rendimiento',title:'De la disciplina al rendimiento',pts:['Siglo XX: sociedad disciplinaria (Foucault), hecha de prohibiciones y mandatos.','Siglo XXI: sociedad del rendimiento, regida por el “sí se puede”.','El sujeto ya no obedece a otro: es emprendedor de sí mismo.']},
+ {id:'han-2',label:'Violencia de|la positividad',title:'La violencia de la positividad',pts:['Ya no hay un enemigo externo: la presión nace del exceso de positividad (más, mejor, ya).','Antes se reaccionaba contra lo extraño; hoy nos agota lo igual.','La libertad aparente se vuelve coacción: nos explotamos y creemos ser libres.']},
+ {id:'han-3',label:'Enfermedades|neuronales',title:'Enfermedades neuronales',pts:['Depresión, TDAH, trastorno límite de la personalidad y síndrome de desgaste ocupacional (burnout).','Para Han son “infartos psíquicos” causados por el exceso de positividad.','El depresivo es alguien agotado de sí mismo y de la exigencia de ser uno mismo.']},
+ {id:'han-4',label:'Atención y|aburrimiento',title:'Atención y aburrimiento profundo',pts:['La multitarea y la hiperatención dispersan, como la atención de un animal salvaje que vigila todo.','Se pierde la atención profunda y contemplativa.','El aburrimiento profundo es el umbral de los procesos creativos; sin pausa no hay pensamiento.','La vida activa se convierte en hiperactividad sin descanso.']},
+ {id:'han-5',label:'El cansancio|que une',title:'El cansancio que une',pts:['Cansancio del rendimiento: agota y aísla; es un cansancio a solas.','Cansancio fundamental (a partir de Peter Handke): afloja, abre y reúne; es un cansancio “elocuente”.','Propuesta: recuperar la contemplación, la pausa y el descanso como forma de resistencia.']}]},
+{id:'animales',n:4,lbl:['De animales','a dioses'],short:'De animales a dioses',author:'Yuval Noah Harari',year:2011,
+ idea:'Breve historia de la humanidad: cómo Sapiens pasó de animal insignificante a especie dominante gracias a ficciones compartidas, y hacia dónde puede llevarnos su poder.',
+ nodes:[
+ {id:'animales-1',label:'Revolución|cognitiva',title:'Revolución cognitiva (~70 000 años)',pts:['Sapiens desarrolla un lenguaje flexible capaz de hablar de lo que no existe físicamente.','Las ficciones compartidas (mitos, dioses, naciones, dinero) permiten cooperar con miles de extraños.','El chisme también ayuda a cohesionar grupos.','Convivió con otras especies humanas, como los neandertales, antes de quedar como la única.']},
+ {id:'animales-2',label:'Revolución|agrícola',title:'Revolución agrícola (~12 000 años)',pts:['Harari la llama “el mayor fraude de la historia”: más comida, pero vidas más duras para la mayoría.','El trigo “domesticó” a los humanos y los ató a la tierra.','Aparecen los excedentes, las jerarquías y la desigualdad.','La domesticación de animales implicó sufrimiento a gran escala.']},
+ {id:'animales-3',label:'Dinero, imperios|y religiones',title:'Dinero, imperios y religiones',pts:['Orden imaginado: sistemas que parecen naturales pero existen porque todos creemos en ellos.','El dinero es el sistema de confianza mutua más universal.','Los imperios unifican territorios y culturas.','Las religiones universales dan legitimidad a esos órdenes.']},
+ {id:'animales-4',label:'Revolución|científica',title:'Revolución científica (~500 años)',pts:['Punto de partida: admitir la ignorancia.','Alianza entre ciencia, imperio y capitalismo: financiación, expansión y crédito.','La confianza en el crecimiento futuro alimenta al capitalismo.','Llega la energía masiva y, con ella, la revolución industrial.']},
+ {id:'animales-5',label:'Animales que|se hacen dioses',title:'Animales que se hacen dioses',pts:['Hoy: ingeniería genética, ciborgs y vida inorgánica.','Pregunta final: ¿somos más felices? Más poder no significa más felicidad.','Riesgo: “dioses insatisfechos” que no saben qué quieren.']}]},
+{id:'nexus',n:5,lbl:['Nexus'],short:'Nexus',author:'Yuval Noah Harari',year:2024,
+ idea:'Breve historia de las redes de información desde la Edad de Piedra hasta la IA: la información conecta, pero no garantiza verdad ni sabiduría.',
+ nodes:[
+ {id:'nexus-1',label:'Información|no es verdad',title:'La información no es verdad',pts:['La información conecta cosas; no siempre representa la realidad.','La “visión ingenua” sostiene que más información lleva a más verdad y sabiduría. Harari la rechaza.','Las mentiras y las fantasías también crean redes de cooperación eficaces.']},
+ {id:'nexus-2',label:'Mitos|y burocracia',title:'Mitos y burocracia',pts:['Dos pilares de las redes: las historias (mitos compartidos) y los documentos (burocracia).','Las historias unen a mucha gente; la burocracia organiza datos y poder.','Los libros sagrados son tecnologías de información con problemas de interpretación y autoridad.']},
+ {id:'nexus-3',label:'Democracia vs.|totalitarismo',title:'Democracia frente a totalitarismo',pts:['Totalitarismo: la información fluye hacia un único centro.','Democracia: red distribuida con varios canales y contrapesos.','Clave: mecanismos de autocorrección (tribunales, prensa libre, ciencia).']},
+ {id:'nexus-4',label:'IA: de herramienta|a agente',title:'IA: de herramienta a agente',pts:['La IA no es solo una herramienta: puede tomar decisiones y generar ideas por sí misma.','Los algoritmos de redes sociales, optimizados para captar atención, pueden amplificar la indignación (ejemplo de Myanmar).','Riesgos: vigilancia total, decisiones opacas y una “cortina de silicio” que divida el mundo en esferas digitales.']},
+ {id:'nexus-5',label:'Qué hacer',title:'Qué hacer',pts:['Humildad y autocorrección: instituciones fuertes capaces de detectar y corregir errores.','Regular la IA y exigir transparencia; por ejemplo, impedir que bots se hagan pasar por humanos.','Evitar el determinismo: la tecnología no es destino, depende de decisiones políticas.']}]}
+];
+const BYID=Object.fromEntries(BOOKS.map(b=>[b.id,b]));
+const LINKS=[
+{id:'l1',t:'De la fábrica al genoma',a:'schwab',b:'animales',body:'Schwab describe la fusión de lo digital con lo biológico; Harari ya había preguntado qué pasa cuando los humanos rediseñan la vida y se acercan a la condición de “dioses”. Pregunta común: ¿hasta dónde conviene intervenir?'},
+{id:'l2',t:'Liquidez y autoexplotación',a:'bauman',b:'han',body:'Para Bauman, la incertidumbre convierte la identidad en una tarea individual. Para Han, ese individuo responsable de todo termina siendo su propio explotador. La inestabilidad prepara el terreno del agotamiento.'},
+{id:'l3',t:'La atención en venta',a:'han',b:'nexus',body:'Han describe una atención dispersa e hiperactiva; Harari muestra algoritmos diseñados para captarla. Juntos explican por qué cuesta tanto el aburrimiento profundo y la pausa.'},
+{id:'l4',t:'De los mitos a las redes',a:'animales',b:'nexus',body:'En Animales, las ficciones compartidas permiten cooperar a gran escala. En Nexus, esas historias viajan por redes de información, y la IA aparece como un nuevo actor capaz de crear las suyas.'},
+{id:'l5',t:'Gobernar la tecnología',a:'schwab',b:'nexus',body:'Schwab pide gobernanza ágil y valores compartidos. Harari concreta el problema: sin mecanismos de autocorrección y regulación, las redes y la IA pueden amplificar errores y concentrar poder.'},
+{id:'l6',t:'Trabajo en movimiento',a:'bauman',b:'schwab',body:'Bauman habla de empleos episódicos y precarios; Schwab, de automatización y polarización del empleo. Ambos retratan un mundo laboral donde la estabilidad deja de ser la norma.'}
+];
+const QUIZ={
+schwab:[
+{q:'¿Qué distingue a la cuarta revolución industrial de las anteriores, según Schwab?',o:['Solo usa más robots en las fábricas','Su velocidad exponencial y la fusión de tecnologías físicas, digitales y biológicas','Reemplaza por completo a la electricidad','Ocurre únicamente en países ricos'],a:1,e:'Schwab destaca velocidad, amplitud y profundidad, e impacto sistémico.'},
+{q:'La segunda revolución industrial se asocia con…',o:['Internet móvil','El vapor y la mecanización','La inteligencia artificial','La electricidad y la producción en masa'],a:3,e:'El vapor corresponde a la primera; internet y la IA, a la cuarta.'},
+{q:'¿Cuál es una megatendencia digital?',o:['Impresión 3D','Biología sintética','Internet de las cosas','Nuevos materiales'],a:2,e:'La impresión 3D y los materiales son físicas; la biología sintética es biológica.'},
+{q:'¿Qué actitud propone Schwab ante esta revolución?',o:['Frenar la innovación','Poner a las personas y los valores compartidos en el centro','Dejar que el mercado decida solo','Esperar a que otros países actúen'],a:1,e:'Su llamado es a darle forma con valores y enfoque humano.'}],
+bauman:[
+{q:'¿Por qué Bauman llama “líquida” a la modernidad actual?',o:['Porque todo es más transparente','Porque depende del agua','Porque desaparece el Estado','Porque nada conserva su forma por mucho tiempo, como los fluidos'],a:3,e:'La metáfora resalta la fluidez, la adaptabilidad y la falta de forma estable.'},
+{q:'¿Qué ocurre con la identidad en la modernidad líquida?',o:['Se hereda y no cambia','Pasa de destino asignado a tarea individual','Depende solo del Estado','Se vuelve irrelevante'],a:1,e:'Cada persona debe construirla y sostenerla con recursos propios.'},
+{q:'¿Qué cambio describe en el mundo del trabajo?',o:['Trabajo episódico, flexible y precario','Estabilidad de por vida','Desaparición total del empleo','Jornadas más cortas para todos'],a:0,e:'El trabajo deja de ser un proyecto de vida estable.'},
+{q:'¿Qué tensión recorre el capítulo sobre la comunidad?',o:['Entre ciencia y religión','Entre campo y ciudad','Entre seguridad y libertad','Entre oferta y demanda'],a:2,e:'La comunidad promete seguridad, pero limita la libertad.'}],
+han:[
+{q:'Para Han, el siglo XXI es una sociedad de…',o:['Disciplina y prohibiciones','Rendimiento y “sí se puede”','Vigilancia estatal total','Escasez de recursos'],a:1,e:'Contrasta con la sociedad disciplinaria del siglo XX.'},
+{q:'¿Qué es la “violencia de la positividad”?',o:['Agresión física de un enemigo externo','Censura política','Una guerra tecnológica','La presión que nace del exceso de positividad y se ejerce sobre uno mismo'],a:3,e:'Es una violencia sin enemigo externo: viene del “más, mejor, ya”.'},
+{q:'¿Qué enfermedades marcan para Han el siglo XXI?',o:['Infecciosas, como la gripe','Neuronales: depresión, TDAH, burnout','Cardíacas','Genéticas raras'],a:1,e:'Las ve como efecto del exceso de positividad.'},
+{q:'¿Por qué valora el aburrimiento profundo?',o:['Porque aumenta la productividad','Porque sustituye al sueño','Porque es umbral de procesos creativos y de contemplación','Porque elimina el cansancio para siempre'],a:2,e:'Sin pausa y sin tiempo vacío, el pensamiento creativo se apaga.'}],
+animales:[
+{q:'¿Qué permitió la Revolución Cognitiva?',o:['Cooperar con muchos extraños gracias a ficciones compartidas','Fabricar herramientas de metal','Cultivar trigo','Inventar la imprenta'],a:0,e:'Mitos, dioses y dinero son ficciones que coordinan a miles de personas.'},
+{q:'¿Qué revolución califica Harari como “el mayor fraude de la historia”?',o:['La científica','La cognitiva','La industrial','La agrícola'],a:3,e:'Más comida, pero vidas más duras para la mayoría.'},
+{q:'¿Cuáles son los grandes órdenes que unifican a la humanidad?',o:['Ciencia, arte y deporte','Dinero, imperios y religiones','Escritura, rueda y fuego','Ejércitos, puertos y minas'],a:1,e:'Son tres sistemas de confianza y legitimidad compartida.'},
+{q:'La Revolución Científica arranca con…',o:['El descubrimiento del fuego','La invención del dinero','El auge de las religiones','Admitir que no lo sabemos todo'],a:3,e:'Reconocer la ignorancia abre la puerta a investigar.'}],
+nexus:[
+{q:'¿Qué rechaza Harari como “visión ingenua” de la información?',o:['Que más información conduce automáticamente a más verdad','Que la información sirve para conectar','Que existen los documentos','Que la prensa puede equivocarse'],a:0,e:'Información no es lo mismo que verdad.'},
+{q:'¿Qué distingue a las democracias según Harari?',o:['Un único centro de decisión','Redes distribuidas con mecanismos de autocorrección','La ausencia de burocracia','El control de la prensa'],a:1,e:'La autocorrección (tribunales, prensa libre, ciencia) es la clave.'},
+{q:'¿Por qué la IA es distinta de la imprenta?',o:['Es más barata','Imprime más rápido','Puede decidir y generar ideas por sí misma','Solo copia textos'],a:2,e:'La imprenta difundía ideas humanas; la IA puede actuar como agente.'},
+{q:'¿Qué es la “cortina de silicio”?',o:['Un tipo de chip','Una ley contra los bots','Una red eléctrica','Una división del mundo en esferas digitales separadas'],a:3,e:'Harari advierte de bloques tecnológicos incompatibles.'}]
+};
+const LEVELS=[{n:'Lector curioso',min:0},{n:'Explorador',min:80},{n:'Cartógrafo',min:200},{n:'Pensador crítico',min:380},{n:'Sabio del mapa',min:600},{n:'Atlas viviente',min:820}];
+const NODES=BOOKS.flatMap(b=>b.nodes.map(n=>({...n,book:b.id})));
+const bookDone=b=>b.nodes.every(n=>S.seen[n.id]);
+const BADGES=[
+{id:'first',g:'◆',name:'Primer trazo',desc:'Descubre tu primer nodo.',test:()=>Object.keys(S.seen).length>=1},
+{id:'book',g:'▲',name:'Libro cartografiado',desc:'Descubre las 5 ramas de un libro.',test:()=>BOOKS.some(bookDone)},
+{id:'bridges',g:'≈',name:'Tejedor de ideas',desc:'Descubre los 6 puentes.',test:()=>LINKS.every(l=>S.links[l.id])},
+{id:'perfect',g:'★',name:'Mente afilada',desc:'Logra un 4/4 en cualquier quiz.',test:()=>Object.keys(S.perfect).length>=1},
+{id:'xp',g:'●',name:'Pensador crítico',desc:'Alcanza el nivel Pensador crítico.',test:()=>xp()>=380},
+{id:'scholar',g:'■',name:'Erudito',desc:'Saca 3/4 o más en los 5 quiz.',test:()=>BOOKS.every(b=>(S.best[b.id]||0)>=3)},
+{id:'all',g:'✦',name:'Mapa completo',desc:'Descubre los 5 libros y sus 25 ramas.',test:()=>BOOKS.every(b=>S.books[b.id]&&bookDone(b))}
+];
+const PTS={seen:10,books:15,links:10,qc:20,perfect:30};
+let S={seen:{},books:{},links:{},qc:{},perfect:{},best:{},badges:{}};
+try{const r=JSON.parse(localStorage.getItem('atlas5')||'null');if(r)S=Object.assign(S,r)}catch(e){}
+const save=()=>{try{localStorage.setItem('atlas5',JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const xp=()=>Object.keys(S).filter(k=>PTS[k]).reduce((a,k)=>a+Object.keys(S[k]).length*PTS[k],0);
+const lvl=()=>{let i=0;LEVELS.forEach((l,k)=>{if(xp()>=l.min)i=k});return i};
+let sel=null,view=matchMedia('(max-width:760px)').matches?'list':'map',confirmReset=false;
+let Q={book:null,i:0,score:0,done:false,picked:null};
+let tt;
+function toast(m){const t=$('#toast');t.firstElementChild.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
+function checkBadges(){return BADGES.filter(b=>!S.badges[b.id]&&b.test()).map(b=>{S.badges[b.id]=1;return b.name})}
+function touch(kind,key,msg){
+  if(S[kind][key])return;
+  const l0=lvl();S[kind][key]=1;
+  let m=`+${PTS[kind]} XP · ${msg}`;
+  const nb=checkBadges();const l1=lvl();
+  if(l1>l0)m+=` · Nivel: ${LEVELS[l1].n}`;
+  if(nb.length)m+=` · Insignia: ${nb.join(', ')}`;
+  save();toast(m);
+}
+const col=b=>`--c:var(--b${b.n})`;
+function lines(arr,x,y,lh,cls){const y0=y-(arr.length-1)*lh/2;return `<text x="${x}" y="${y0}" text-anchor="middle" dominant-baseline="central" class="${cls}">`+arr.map((l,i)=>`<tspan x="${x}" dy="${i?lh:0}">${l}</tspan>`).join('')+`</text>`}
+
+function renderHUD(){
+  const i=lvl(),x=xp(),cur=LEVELS[i],nxt=LEVELS[i+1];
+  const pct=nxt?Math.round((x-cur.min)/(nxt.min-cur.min)*100):100;
+  const quizOk=BOOKS.filter(b=>(S.best[b.id]||0)>=3).length;
+  $('#hud').innerHTML=`<div class="card"><div class="lab">Nivel ${i+1} de ${LEVELS.length}</div><div class="lvl">${cur.n}</div>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>
+  <div class="xpline"><span>${x} XP</span><span>${nxt?`${nxt.min-x} XP para ${nxt.n}`:'Nivel máximo'}</span></div></div>
+  <div class="card stats">
+   <div class="stat"><b>${Object.keys(S.seen).length}/${NODES.length}</b><span>Ramas descubiertas</span></div>
+   <div class="stat"><b>${Object.keys(S.links).length}/${LINKS.length}</b><span>Puentes</span></div>
+   <div class="stat"><b>${quizOk}/${BOOKS.length}</b><span>Quiz aprobados</span></div>
+   <div class="stat"><b>${Object.keys(S.badges).length}/${BADGES.length}</b><span>Insignias</span></div></div>`;
+}
+
+const POS={schwab:{s:'r',y:150},bauman:{s:'r',y:390},han:{s:'r',y:630},animales:{s:'l',y:270},nexus:{s:'l',y:510}};
+function renderMap(){
+  const CX=590,CY=390;let p='',nd='';
+  BOOKS.forEach(b=>{
+    const g=POS[b.id],r=g.s==='r',bx=r?740:270,by=g.y,bw=170,bh=54;
+    const x1=r?CX+62:CX-62,x2=r?bx:bx+bw,m=(x1+x2)/2;
+    p+=`<path d="M${x1},${CY} C${m},${CY} ${m},${by} ${x2},${by}" class="edge b" style="${col(b)}"/>`;
+    const cw=190,ch=38,cx0=r?950:40;
+    b.nodes.forEach((n,i)=>{
+      const cy=by+(i-2)*48,sx=r?bx+bw:bx,ex=r?cx0:cx0+cw,mm=(sx+ex)/2,done=S.seen[n.id];
+      p+=`<path d="M${sx},${by} C${mm},${by} ${mm},${cy} ${ex},${cy}" class="edge${done?' on':''}" style="${col(b)}"/>`;
+      nd+=`<g class="node${done?' done':''}${sel===n.id?' sel':''}" role="button" tabindex="0" data-act="open" data-v="${n.id}" aria-label="${n.title}${done?' (descubierto)':''}" style="${col(b)}"><rect x="${cx0}" y="${cy-ch/2}" width="${cw}" height="${ch}" rx="10"/>${lines(n.label.split('|'),cx0+cw/2,cy,14,'t')}</g>`;
+    });
+    const cnt=b.nodes.filter(n=>S.seen[n.id]).length;
+    nd+=`<g class="node${S.books[b.id]?' done':''}${sel===b.id?' sel':''}" role="button" tabindex="0" data-act="open" data-v="${b.id}" aria-label="Libro: ${b.short}" style="${col(b)}"><rect x="${bx}" y="${by-bh/2}" width="${bw}" height="${bh}" rx="14"/>${lines(b.lbl,bx+bw/2,by,16,'tb')}<circle class="cnt" cx="${bx+bw-4}" cy="${by-bh/2+2}" r="13"/><text class="ct" x="${bx+bw-4}" y="${by-bh/2+3}" text-anchor="middle" dominant-baseline="central">${cnt}/5</text></g>`;
+  });
+  const hub=`<circle class="hub" cx="${CX}" cy="${CY}" r="62"/>${lines(['Tecnología,','tiempo y','humanidad'],CX,CY,17,'th')}`;
+  $('#svg').innerHTML=p+hub+nd;
+}
+
+function bullets(n){return `<ul>${n.pts.map(t=>`<li>${t}</li>`).join('')}</ul>`}
+function renderPanel(){
+  const el=$('#panel');
+  if(view==='list'){el.hidden=true;return}
+  el.hidden=false;
+  if(!sel){el.innerHTML='<p class="xpnote">Toca un libro o una rama del mapa para descubrirla. Cada descubrimiento nuevo suma XP.</p>';return}
+  const b=BYID[sel];
+  if(b){
+    el.style.cssText=col(b);
+    el.innerHTML=`<div class="kick">${b.author} · ${b.year}</div><h3>${b.short}</h3><p>${b.idea}</p>
+    <div class="chips">${b.nodes.map(n=>`<button class="chip${S.seen[n.id]?' done':''}" data-act="open" data-v="${n.id}">${n.title}</button>`).join('')}</div>
+    <div class="pnav"><button class="btn" data-act="quiz" data-v="${b.id}">Probar el quiz de este libro</button><span class="xpnote">${b.nodes.filter(n=>S.seen[n.id]).length} de 5 ramas descubiertas</span></div>`;
+    return;
+  }
+  const n=NODES.find(x=>x.id===sel),bk=BYID[n.book],idx=bk.nodes.findIndex(x=>x.id===n.id);
+  const prev=bk.nodes[idx-1],next=bk.nodes[idx+1];
+  el.style.cssText=col(bk);
+  el.innerHTML=`<div class="kick">${bk.short} · rama ${idx+1} de 5</div><h3>${n.title}</h3>${bullets(n)}
+  <div class="pnav">${prev?`<button class="btn ghost" data-act="open" data-v="${prev.id}">← ${prev.title}</button>`:''}${next?`<button class="btn" data-act="open" data-v="${next.id}">Siguiente rama →</button>`:`<button class="btn" data-act="quiz" data-v="${bk.id}">Probar el quiz</button>`}</div>`;
+}
+function renderList(){
+  const el=$('#list');
+  el.hidden=view!=='list';
+  if(view!=='list')return;
+  el.innerHTML=BOOKS.map(b=>{
+    const open=sel===b.id;
+    return `<div class="bcard" style="${col(b)}"><button class="bhead" data-act="open" data-v="${b.id}" aria-expanded="${open}"><span><b>${b.short}</b><small>${b.author} · ${b.year}</small></span><span class="n">${b.nodes.filter(n=>S.seen[n.id]).length}/5</span></button>
+    ${open?`<p class="bidea">${b.idea}</p>`:''}
+    <div class="rows">${b.nodes.map(n=>{const o=sel===n.id;return `<button class="row${S.seen[n.id]?' done':''}" data-act="open" data-v="${n.id}" aria-expanded="${o}"><i class="dot"></i><span>${n.title}</span></button>${o?`<div class="rowbody">${bullets(n)}</div>`:''}`}).join('')}</div></div>`;
+  }).join('');
+}
+function renderLinks(){
+  $('#links').innerHTML=LINKS.map(l=>{
+    const A=BYID[l.a],B=BYID[l.b],seen=S.links[l.id];
+    return `<article class="bridge"><div class="pair"><span class="pill" style="${col(A)}">${A.short}</span><span class="pill" style="${col(B)}">${B.short}</span></div>
+    <h3>${l.t}</h3>${seen?`<p>${l.body}</p>`:`<p class="locked">Conexión por descubrir.</p><button class="btn" data-act="link" data-v="${l.id}">Descubrir puente · +10 XP</button>`}</article>`;
+  }).join('');
+}
+function renderBadges(){
+  $('#badges').innerHTML=BADGES.map((b,i)=>`<div class="badge${S.badges[b.id]?'':' off'}" style="--c:var(--b${i%5+1})"><svg class="hex" viewBox="0 0 48 52" aria-hidden="true"><polygon points="24,2 45,14 45,38 24,50 3,38 3,14"/><text x="24" y="27" text-anchor="middle" dominant-baseline="central">${b.g}</text></svg><div><b>${b.name}</b><span>${S.badges[b.id]?'Desbloqueada. ':'Bloqueada. '}${b.desc}</span></div></div>`).join('');
+}
+function renderQuiz(){
+  $('#qtabs').innerHTML=BOOKS.map(b=>`<button class="qtab" style="${col(b)}" aria-pressed="${Q.book===b.id}" data-act="quiz" data-v="${b.id}">${b.short}${S.best[b.id]!=null?` · ${S.best[b.id]}/4`:''}</button>`).join('');
+  const box=$('#qbox');
+  if(!Q.book){box.style.cssText='';box.innerHTML='<p class="xpnote">Elige un libro para empezar.</p>';return}
+  const b=BYID[Q.book],qs=QUIZ[Q.book];box.style.cssText=col(b);
+  if(Q.done){
+    box.innerHTML=`<div class="kick">${b.short}</div><div class="score">${Q.score}/4</div><p>${Q.score===4?'Perfecto. Dominas este libro.':Q.score>=3?'Aprobado. Buen dominio del libro.':'Repasa las ramas del mapa y vuelve a intentarlo.'}</p>
+    <div class="pnav"><button class="btn" data-act="quiz" data-v="${b.id}" data-r="1">Repetir quiz</button><button class="btn ghost" data-act="open" data-v="${b.id}" data-go="1">Volver al mapa</button></div>`;return;
+  }
+  const q=qs[Q.i];
+  box.innerHTML=`<div class="qprog">${qs.map((_,k)=>`<i class="${k<=Q.i?'on':''}"></i>`).join('')}</div>
+  <div class="kick">${b.short} · pregunta ${Q.i+1} de 4</div><h3 style="margin-top:6px">${q.q}</h3>
+  <div class="opts">${q.o.map((t,k)=>{let c='';if(Q.picked!=null){if(k===q.a)c=' ok';else if(k===Q.picked)c=' no'}return `<button class="opt${c}" data-act="opt" data-v="${k}"${Q.picked!=null?' disabled':''}>${t}</button>`}).join('')}</div>
+  ${Q.picked!=null?`<p class="fb">${Q.picked===q.a?'Correcto. ':'No exactamente. '}${q.e}</p><div class="pnav"><button class="btn" data-act="next">${Q.i<3?'Siguiente pregunta':'Ver resultado'}</button></div>`:''}`;
+}
+function renderAll(){renderHUD();renderMap();renderPanel();renderList();renderLinks();renderBadges()}
+function refocus(id){const e=document.querySelector(`[data-act="open"][data-v="${id}"]`);if(e)e.focus({preventScroll:true})}
+function reveal(){const p=$('#panel'),r=p.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)p.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})}
+
+function openSel(id){
+  const isBook=!!BYID[id];
+  if(view==='list'&&sel===id){sel=null;renderAll();refocus(id);return}
+  sel=id;
+  if(isBook)touch('books',id,'Libro explorado');else touch('seen',id,'Rama descubierta');
+  renderAll();refocus(id);
+  if(view==='map')reveal();
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const a=t.dataset.act,v=t.dataset.v;
+  if(a==='open'){openSel(v);if(t.dataset.go)$('#t-mapa').scrollIntoView({block:'start'})}
+  else if(a==='view'){view=v;document.querySelectorAll('[data-act="view"]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));$('#mapbox').hidden=v==='list';renderAll()}
+  else if(a==='link'){touch('links',v,'Puente descubierto');renderAll()}
+  else if(a==='quiz'){Q={book:v,i:0,score:0,done:false,picked:null};renderQuiz();$('#t-quiz').scrollIntoView({block:'start'})}
+  else if(a==='opt'){
+    const k=+v,q=QUIZ[Q.book][Q.i];Q.picked=k;
+    if(k===q.a){Q.score++;touch('qc',Q.book+Q.i,'Respuesta correcta')}
+    renderQuiz();renderHUD();renderBadges();
+  }
+  else if(a==='next'){
+    if(Q.i<3){Q.i++;Q.picked=null}
+    else{
+      Q.done=true;S.best[Q.book]=Math.max(S.best[Q.book]||0,Q.score);
+      if(Q.score===4)touch('perfect',Q.book,'Quiz perfecto');
+      else{const nb=checkBadges();save();if(nb.length)toast('Insignia: '+nb.join(', '))}
+    }
+    renderQuiz();renderHUD();renderBadges();
+  }
+  else if(a==='reset'){
+    if(!confirmReset){confirmReset=true;t.textContent='Confirmar: borrar todo el progreso';return}
+    S={seen:{},books:{},links:{},qc:{},perfect:{},best:{},badges:{}};save();confirmReset=false;sel=null;Q={book:null,i:0,score:0,done:false,picked:null};
+    t.textContent='Reiniciar progreso';renderAll();renderQuiz();toast('Progreso reiniciado');
+  }
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('node')){e.preventDefault();openSel(e.target.dataset.v)}
+});
+$('#mapbox').hidden=view==='list';
+document.querySelectorAll('[data-act="view"]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===view));
+renderAll();renderQuiz();
+</script>
+
+</body></html>
